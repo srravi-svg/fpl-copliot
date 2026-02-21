@@ -153,7 +153,7 @@ const Index = () => {
                   <Button
                     onClick={handleLoadSquad}
                     disabled={isLoading}
-                    className="w-full h-12 text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/90"
+                    className="w-full h-12 text-base font-semibold bg-fpl-green text-fpl-purple hover:bg-fpl-green/90"
                   >
                     {isLoading ? (
                       <>
@@ -168,7 +168,7 @@ const Index = () => {
                   <Button
                     variant="outline"
                     onClick={handleDemoSquad}
-                    className="w-full h-12 text-base border-fpl-green text-fpl-green hover:bg-fpl-green/10"
+                    className="w-full h-12 text-base font-semibold border-2 border-white text-white bg-white/10 hover:bg-white/20"
                   >
                     <Users className="w-4 h-4" />
                     Use Demo Squad
