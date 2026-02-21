@@ -338,7 +338,10 @@ export default function Dashboard() {
                       <div>
                         <div className="flex items-center justify-between mb-2">
                           <p className="text-xs font-semibold text-muted-foreground">STARTING XI</p>
-                          <p className="text-xs font-semibold text-muted-foreground">xPts</p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-xs font-semibold text-muted-foreground">xPts</p>
+                            <span className="invisible text-[8px] px-1 py-0">placeholder</span>
+                          </div>
                         </div>
                         <div className="space-y-1">
                           {starting.map((p, i) => {
@@ -371,7 +374,10 @@ export default function Dashboard() {
                       <div className="pt-3 border-t">
                           <div className="flex items-center justify-between mb-2">
                             <p className="text-xs font-semibold text-muted-foreground">BENCH ORDER</p>
-                            <p className="text-xs font-semibold text-muted-foreground">xPts</p>
+                            <div className="flex items-center gap-2">
+                              <p className="text-xs font-semibold text-muted-foreground">xPts</p>
+                              <span className="invisible text-[8px] px-1 py-0">placeholder</span>
+                            </div>
                           </div>
                         <div className="space-y-1">
                           {bench.map((p, i) => {
