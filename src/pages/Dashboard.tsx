@@ -10,10 +10,15 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
   ArrowLeft, RefreshCw, Crown, Users, ArrowRightLeft, Send, Bot, User,
   TrendingUp, Shield, Clock, AlertTriangle, Home, Plane, Sparkles, Search,
-  LayoutList, LayoutGrid
+  LayoutList, LayoutGrid, Wrench, ChevronDown, CalendarDays
 } from 'lucide-react';
+import PriceChanges from '@/components/PriceChanges';
+import LongTermPlanning from '@/components/LongTermPlanning';
 import { loadSquad, createDemoSquad, saveSquad, getDemoData } from '@/lib/fpl-store';
 import { UserSquad, SquadPlayer, POSITION_MAP, POSITION_COLORS, FixturePreview, ChatMessage, getPlayerPhotoUrl } from '@/lib/fpl-types';
 import PlayerPhoto from '@/components/PlayerPhoto';
@@ -252,20 +257,41 @@ export default function Dashboard() {
       {/* Tabbed Content */}
       <div className="container mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6">
-            <TabsTrigger value="squad" className="flex items-center gap-1.5">
-              <Users className="w-4 h-4" /> Squad
-            </TabsTrigger>
-            <TabsTrigger value="captain" className="flex items-center gap-1.5">
-              <Crown className="w-4 h-4" /> Captain
-            </TabsTrigger>
-            <TabsTrigger value="transfers" className="flex items-center gap-1.5">
-              <ArrowRightLeft className="w-4 h-4" /> Transfers
-            </TabsTrigger>
-            <TabsTrigger value="chat" className="flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4" /> AI Chat
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex items-center gap-1 mb-6">
+            <TabsList className="grid grid-cols-4 flex-1">
+              <TabsTrigger value="squad" className="flex items-center gap-1.5">
+                <Users className="w-4 h-4" /> Squad
+              </TabsTrigger>
+              <TabsTrigger value="captain" className="flex items-center gap-1.5">
+                <Crown className="w-4 h-4" /> Captain
+              </TabsTrigger>
+              <TabsTrigger value="transfers" className="flex items-center gap-1.5">
+                <ArrowRightLeft className="w-4 h-4" /> Transfers
+              </TabsTrigger>
+              <TabsTrigger value="chat" className="flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4" /> AI Chat
+              </TabsTrigger>
+            </TabsList>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant={activeTab === 'price-changes' || activeTab === 'long-term' ? 'default' : 'outline'}
+                  size="sm"
+                  className="flex items-center gap-1.5 ml-2"
+                >
+                  <Wrench className="w-4 h-4" /> Tools <ChevronDown className="w-3 h-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-popover z-50">
+                <DropdownMenuItem onClick={() => setActiveTab('price-changes')} className="flex items-center gap-2 cursor-pointer">
+                  <TrendingUp className="w-4 h-4" /> Price Changes Predictor
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setActiveTab('long-term')} className="flex items-center gap-2 cursor-pointer">
+                  <CalendarDays className="w-4 h-4" /> Long Term Planning
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
 
           {/* ===== SQUAD TAB ===== */}
           <TabsContent value="squad">
@@ -630,6 +656,16 @@ export default function Dashboard() {
                 </div>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* ===== PRICE CHANGES TAB ===== */}
+          <TabsContent value="price-changes">
+            <PriceChanges players={squad.players} />
+          </TabsContent>
+
+          {/* ===== LONG TERM PLANNING TAB ===== */}
+          <TabsContent value="long-term">
+            <LongTermPlanning squad={squad} allPlayers={savedData?.players ?? squad.players} />
           </TabsContent>
         </Tabs>
       </div>
