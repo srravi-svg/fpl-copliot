@@ -78,6 +78,7 @@ export interface UserSquad {
   teamId: number | null;
   players: SquadPlayer[];
   gameweek: number;
+  bank: number; // ITB in tenths (e.g. 15 = £1.5)
   isDemo: boolean;
   lastRefreshed: string;
 }

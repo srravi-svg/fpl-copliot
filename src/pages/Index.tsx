@@ -46,12 +46,13 @@ const Index = () => {
       setDetectedGw(gw);
 
       const enriched = enrichPlayers(bootstrap.players, fixtures, bootstrap.teams, gw);
-      const picks = await fetchSquadPicks(parseInt(teamId), gw, enriched);
+      const { players: picks, bank } = await fetchSquadPicks(parseInt(teamId), gw, enriched);
 
       const squad = {
         teamId: parseInt(teamId),
         players: picks,
         gameweek: gw,
+        bank,
         isDemo: false,
         lastRefreshed: new Date().toISOString(),
       };

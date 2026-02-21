@@ -434,7 +434,7 @@ export default function Dashboard() {
                   <ArrowRightLeft className="w-4 h-4" /> Transfer Suggestions
                 </CardTitle>
                 <CardDescription>
-                  Assuming £0.0 ITB • {allowHit ? '-4 hit allowed' : 'Free transfer only'}
+                  £{((squad.bank ?? 0) / 10).toFixed(1)} ITB • {allowHit ? '-4 hit allowed' : 'Free transfer only'}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -454,7 +454,8 @@ export default function Dashboard() {
                     if (!weakest) return null;
                     const weakestFix = getNextFixture(weakest);
                     const pos = weakest.element_type;
-                    const budget = weakest.now_cost + 5; // small buffer
+                    const itb = squad.bank ?? 0;
+                    const budget = weakest.now_cost + itb;
 
                     // Find best replacement from full pool
                     const candidates = allPlayers
@@ -510,6 +511,9 @@ export default function Dashboard() {
                                       {cFix.opponent} ({cFix.isHome ? 'H' : 'A'})
                                     </Badge>
                                   )}
+                                  <p className="text-[10px] font-medium text-muted-foreground mt-1">
+                                    ITB after: £{((itb + weakest.now_cost - c.now_cost) / 10).toFixed(1)}
+                                  </p>
                                 </div>
                               );
                             }) : (
@@ -523,7 +527,7 @@ export default function Dashboard() {
                 })()}
                 <p className="text-[10px] text-muted-foreground">
                   <AlertTriangle className="inline w-3 h-3 mr-1" />
-                  Budget assumed £0.0 ITB. Actual transfers depend on your real budget.
+                  ITB based on your actual squad data. Selling prices may differ from purchase prices.
                 </p>
               </CardContent>
             </Card>
