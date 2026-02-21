@@ -69,6 +69,17 @@ export default function Dashboard() {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages]);
 
+  // Load real data from localStorage if available, otherwise fall back to demo
+  const savedData = React.useMemo(() => {
+    try {
+      const raw = localStorage.getItem('fpl-data');
+      if (raw) return JSON.parse(raw);
+    } catch {}
+    return null;
+  }, []);
+  const teams = savedData?.teams ?? DEMO_TEAMS;
+  const fixtures = savedData?.fixtures ?? DEMO_FIXTURES;
+
   if (!squad) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -79,8 +90,6 @@ export default function Dashboard() {
 
   const captainPicks = generateCaptainRec(squad.players);
   const { starting, bench } = generateStartingXI(squad.players);
-  const teams = DEMO_TEAMS;
-  const fixtures = DEMO_FIXTURES;
 
   const groupedPlayers = squad.players.reduce((acc, p) => {
     const pos = POSITION_MAP[p.element_type];
@@ -90,7 +99,8 @@ export default function Dashboard() {
   }, {} as Record<string, SquadPlayer[]>);
 
   const getNextFixture = (player: SquadPlayer): FixturePreview | null => {
-    const previews = getFixturePreviews(player, fixtures, teams, squad.gameweek - 1, 1);
+    // Look for fixtures in the current GW and ahead
+    const previews = getFixturePreviews(player, fixtures, teams, squad.gameweek - 1, 3);
     return previews[0] ?? null;
   };
 
@@ -371,28 +381,48 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-1">
-                  {starting.map((p, i) => (
-                    <div key={p.id} className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground w-4">{i + 1}</span>
-                        <PlayerPhoto code={p.code} name={p.web_name} size="sm" />
-                        <Badge variant="outline" className={`text-[10px] px-1 ${POSITION_COLORS[POSITION_MAP[p.element_type]]}`}>
-                          {POSITION_MAP[p.element_type]}
-                        </Badge>
-                        <span className="text-sm font-medium">{p.web_name}</span>
+                  {starting.map((p, i) => {
+                    const fix = getNextFixture(p);
+                    return (
+                      <div key={p.id} className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-muted-foreground w-4">{i + 1}</span>
+                          <PlayerPhoto code={p.code} name={p.web_name} size="sm" />
+                          <Badge variant="outline" className={`text-[10px] px-1 ${POSITION_COLORS[POSITION_MAP[p.element_type]]}`}>
+                            {POSITION_MAP[p.element_type]}
+                          </Badge>
+                          <span className="text-sm font-medium">{p.web_name}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-mono text-muted-foreground">{p.captainScore.toFixed(2)}</span>
+                          {fix && (
+                            <Badge className={`text-[8px] px-1 py-0 ${getFDRColor(fix.difficulty)}`}>
+                              {fix.opponent} ({fix.isHome ? 'H' : 'A'})
+                            </Badge>
+                          )}
+                        </div>
                       </div>
-                      <span className="text-xs font-mono text-muted-foreground">{p.captainScore.toFixed(2)}</span>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <div className="mt-3 pt-3 border-t">
                   <p className="text-xs font-semibold text-muted-foreground mb-1">Bench Order</p>
-                  {bench.map((p, i) => (
-                    <div key={p.id} className="flex items-center justify-between py-1 text-xs text-muted-foreground">
-                      <span>{i + 1}. {p.web_name} ({POSITION_MAP[p.element_type]})</span>
-                      <span className="font-mono">{p.captainScore.toFixed(2)}</span>
-                    </div>
-                  ))}
+                  {bench.map((p, i) => {
+                    const fix = getNextFixture(p);
+                    return (
+                      <div key={p.id} className="flex items-center justify-between py-1 text-xs text-muted-foreground">
+                        <span>{i + 1}. {p.web_name} ({POSITION_MAP[p.element_type]})</span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono">{p.captainScore.toFixed(2)}</span>
+                          {fix && (
+                            <Badge className={`text-[8px] px-1 py-0 ${getFDRColor(fix.difficulty)}`}>
+                              {fix.opponent} ({fix.isHome ? 'H' : 'A'})
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -414,6 +444,7 @@ export default function Dashboard() {
                   ...(allowHit ? [{ tier: 'Aggressive', desc: '-4 hit for double upgrade', color: 'border-red-500/30' }] : []),
                 ].map(({ tier, desc, color }) => {
                   const weakest = [...squad.players].sort((a, b) => a.captainScore - b.captainScore)[0];
+                  const weakestFix = weakest ? getNextFixture(weakest) : null;
                   return (
                     <div key={tier} className={`p-3 rounded-lg border ${color}`}>
                       <div className="flex items-center justify-between mb-1">
@@ -421,10 +452,17 @@ export default function Dashboard() {
                         <Badge variant="outline" className="text-[10px]">{tier === 'Aggressive' ? '-4 pts' : 'Free'}</Badge>
                       </div>
                       <p className="text-xs text-muted-foreground mb-2">{desc}</p>
-                      <p className="text-xs">
-                        <span className="text-destructive">OUT:</span> {weakest?.web_name} ({weakest?.team_short_name}) →{' '}
-                        <span className="text-emerald-600">IN:</span> Best available {POSITION_MAP[weakest?.element_type ?? 3]}
-                      </p>
+                      <div className="flex items-center gap-2 text-xs flex-wrap">
+                        <span>
+                          <span className="text-destructive">OUT:</span> {weakest?.web_name} ({weakest?.team_short_name})
+                        </span>
+                        {weakestFix && (
+                          <Badge className={`text-[8px] px-1 py-0 ${getFDRColor(weakestFix.difficulty)}`}>
+                            {weakestFix.opponent} ({weakestFix.isHome ? 'H' : 'A'})
+                          </Badge>
+                        )}
+                        <span>→ <span className="text-emerald-600">IN:</span> Best available {POSITION_MAP[weakest?.element_type ?? 3]}</span>
+                      </div>
                     </div>
                   );
                 })}
