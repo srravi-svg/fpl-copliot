@@ -474,42 +474,49 @@ export default function Dashboard() {
                         </div>
                         <p className="text-xs text-muted-foreground mb-2">{desc}</p>
 
-                        {/* OUT player */}
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xs text-destructive font-semibold">OUT</span>
-                          <PlayerPhoto code={weakest.code} name={weakest.web_name} size="sm" />
-                          <div className="flex-1 min-w-0">
-                            <span className="text-xs font-medium">{weakest.web_name}</span>
-                            <span className="text-[10px] text-muted-foreground ml-1">({weakest.team_short_name} • £{(weakest.now_cost / 10).toFixed(1)})</span>
+                        <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-start">
+                          {/* OUT player - left */}
+                          <div className="flex flex-col items-center text-center p-2 rounded-lg bg-destructive/5">
+                            <span className="text-xs text-destructive font-bold mb-1">OUT</span>
+                            <PlayerPhoto code={weakest.code} name={weakest.web_name} size="lg" />
+                            <p className="font-semibold text-sm mt-1.5 leading-tight">{weakest.web_name}</p>
+                            <p className="text-[10px] text-muted-foreground">{weakest.team_short_name} • £{(weakest.now_cost / 10).toFixed(1)}</p>
+                            <p className="text-[10px] text-muted-foreground">Form: {weakest.formScore.toFixed(1)}</p>
+                            {weakestFix && (
+                              <Badge className={`text-[10px] px-1.5 mt-1 ${getFDRColor(weakestFix.difficulty)}`}>
+                                {weakestFix.opponent} ({weakestFix.isHome ? 'H' : 'A'})
+                              </Badge>
+                            )}
                           </div>
-                          {weakestFix && (
-                            <Badge className={`text-[8px] px-1 py-0 ${getFDRColor(weakestFix.difficulty)}`}>
-                              {weakestFix.opponent} ({weakestFix.isHome ? 'H' : 'A'})
-                            </Badge>
-                          )}
-                        </div>
 
-                        {/* IN candidates */}
-                        {candidates.length > 0 ? candidates.map((c: any) => {
-                          const cFix = getNextFixture(c);
-                          return (
-                            <div key={c.id} className="flex items-center gap-2 ml-4 mb-1">
-                              <span className="text-xs text-emerald-600 font-semibold">IN</span>
-                              <PlayerPhoto code={c.code} name={c.web_name} size="sm" />
-                              <div className="flex-1 min-w-0">
-                                <span className="text-xs font-medium">{c.web_name}</span>
-                                <span className="text-[10px] text-muted-foreground ml-1">({c.team_short_name} • £{(c.now_cost / 10).toFixed(1)} • Form: {c.form})</span>
-                              </div>
-                              {cFix && (
-                                <Badge className={`text-[8px] px-1 py-0 ${getFDRColor(cFix.difficulty)}`}>
-                                  {cFix.opponent} ({cFix.isHome ? 'H' : 'A'})
-                                </Badge>
-                              )}
-                            </div>
-                          );
-                        }) : (
-                          <p className="text-[10px] text-muted-foreground ml-4">No data available — load squad with your Team ID for suggestions</p>
-                        )}
+                          {/* Arrow */}
+                          <div className="flex items-center justify-center self-center">
+                            <ArrowRightLeft className="w-4 h-4 text-muted-foreground" />
+                          </div>
+
+                          {/* IN candidates - right */}
+                          <div className="space-y-2">
+                            {candidates.length > 0 ? candidates.map((c: any) => {
+                              const cFix = getNextFixture(c);
+                              return (
+                                <div key={c.id} className="flex flex-col items-center text-center p-2 rounded-lg bg-emerald-500/5">
+                                  <span className="text-xs text-emerald-600 font-bold mb-1">IN</span>
+                                  <PlayerPhoto code={c.code} name={c.web_name} size="lg" />
+                                  <p className="font-semibold text-sm mt-1.5 leading-tight">{c.web_name}</p>
+                                  <p className="text-[10px] text-muted-foreground">{c.team_short_name} • £{(c.now_cost / 10).toFixed(1)}</p>
+                                  <p className="text-[10px] text-muted-foreground">Form: {c.form}</p>
+                                  {cFix && (
+                                    <Badge className={`text-[10px] px-1.5 mt-1 ${getFDRColor(cFix.difficulty)}`}>
+                                      {cFix.opponent} ({cFix.isHome ? 'H' : 'A'})
+                                    </Badge>
+                                  )}
+                                </div>
+                              );
+                            }) : (
+                              <p className="text-[10px] text-muted-foreground text-center">No data — load squad with Team ID</p>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     );
                   });
