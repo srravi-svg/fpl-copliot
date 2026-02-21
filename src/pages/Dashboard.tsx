@@ -340,7 +340,7 @@ export default function Dashboard() {
                           <p className="text-xs font-semibold text-muted-foreground">STARTING XI</p>
                           <div className="flex items-center gap-2">
                             <p className="text-xs font-semibold text-muted-foreground">xPts</p>
-                            <span className="invisible text-[8px] px-1 py-0">placeholder</span>
+                            <p className="text-xs font-semibold text-muted-foreground">Fixture</p>
                           </div>
                         </div>
                         <div className="space-y-1">
@@ -376,7 +376,7 @@ export default function Dashboard() {
                             <p className="text-xs font-semibold text-muted-foreground">BENCH ORDER</p>
                             <div className="flex items-center gap-2">
                               <p className="text-xs font-semibold text-muted-foreground">xPts</p>
-                              <span className="invisible text-[8px] px-1 py-0">placeholder</span>
+                              <p className="text-xs font-semibold text-muted-foreground">Fixture</p>
                             </div>
                           </div>
                         <div className="space-y-1">
