@@ -245,7 +245,7 @@ export default function Dashboard() {
           </div>
           <div className="flex items-center gap-3">
             <Link to="/explorer">
-              <Button variant="outline" size="sm"><Search className="w-4 h-4 mr-1" /> Players</Button>
+              <Button variant="outline" size="sm"><Search className="w-4 h-4 mr-1" /> Explore Players</Button>
             </Link>
             <Button variant="outline" size="sm" onClick={() => toast({ title: 'Data refreshed' })}>
               <RefreshCw className="w-4 h-4" />
