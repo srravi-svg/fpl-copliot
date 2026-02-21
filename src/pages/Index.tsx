@@ -168,7 +168,7 @@ const Index = () => {
                   <Button
                     variant="outline"
                     onClick={handleDemoSquad}
-                    className="w-full h-12 text-base font-semibold border-2 border-white text-white bg-white/10 hover:bg-white/20"
+                    className="w-full h-12 text-base font-semibold border-2 border-fpl-purple text-fpl-purple bg-transparent hover:bg-fpl-purple/10"
                   >
                     <Users className="w-4 h-4" />
                     Use Demo Squad
