@@ -1,0 +1,7 @@
+project_id = "xztflrowjlexvulfflwe"
+
+[functions.fpl-proxy]
+verify_jwt = false
+
+[functions.fpl-chat]
+verify_jwt = false
