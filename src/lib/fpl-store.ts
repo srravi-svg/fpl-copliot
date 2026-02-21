@@ -26,6 +26,7 @@ export function createDemoSquad(gameweek: number = 28): UserSquad {
     teamId: null,
     players: getDemoSquad(),
     gameweek,
+    bank: 0,
     isDemo: true,
     lastRefreshed: new Date().toISOString(),
   };

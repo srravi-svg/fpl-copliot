@@ -93,14 +93,14 @@ export async function fetchFixtures(): Promise<FPLFixture[]> {
   }));
 }
 
-export async function fetchSquadPicks(teamId: number, gameweek: number, allPlayers: FPLPlayer[]): Promise<SquadPlayer[]> {
+export async function fetchSquadPicks(teamId: number, gameweek: number, allPlayers: FPLPlayer[]): Promise<{ players: SquadPlayer[]; bank: number }> {
   const playerMap = new Map(allPlayers.map(p => [p.id, p]));
 
-  // Try requested GW first, then walk back up to 3 GWs to find the latest with data
   for (let gw = gameweek; gw >= Math.max(1, gameweek - 3); gw--) {
     try {
       const data = await proxyFetch(`entry/${teamId}/event/${gw}/picks/`);
-      return data.picks.map((pick: any) => {
+      const bank = data.entry_history?.bank ?? 0;
+      const players = data.picks.map((pick: any) => {
         const player = playerMap.get(pick.element);
         if (!player) return null;
         return {
@@ -111,8 +111,8 @@ export async function fetchSquadPicks(teamId: number, gameweek: number, allPlaye
           multiplier: pick.multiplier,
         } as SquadPlayer;
       }).filter(Boolean) as SquadPlayer[];
+      return { players, bank };
     } catch {
-      // Try previous gameweek
       continue;
     }
   }
