@@ -657,17 +657,15 @@ export default function Dashboard() {
               </Card>
             </div>
           </TabsContent>
-
-          {/* ===== PRICE CHANGES TAB ===== */}
-          <TabsContent value="price-changes">
-            <PriceChanges players={squad.players} />
-          </TabsContent>
-
-          {/* ===== LONG TERM PLANNING TAB ===== */}
-          <TabsContent value="long-term">
-            <LongTermPlanning squad={squad} allPlayers={savedData?.players ?? squad.players} />
-          </TabsContent>
         </Tabs>
+
+        {/* Tools pages rendered outside Tabs since they have no TabsTrigger */}
+        {activeTab === 'price-changes' && (
+          <PriceChanges players={squad.players} />
+        )}
+        {activeTab === 'long-term' && (
+          <LongTermPlanning squad={squad} allPlayers={savedData?.players ?? squad.players} />
+        )}
       </div>
     </div>
   );
