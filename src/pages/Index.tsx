@@ -129,12 +129,12 @@ const Index = () => {
                   />
                 </div>
 
-                <Select value={gameweek} onValueChange={setGameweek}>
+                <Select value={gameweek || "auto"} onValueChange={(v) => setGameweek(v === "auto" ? "" : v)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Auto-detect Gameweek" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Auto-detect (latest)</SelectItem>
+                    <SelectItem value="auto">Auto-detect (latest)</SelectItem>
                     {Array.from({ length: 38 }, (_, i) => (
                       <SelectItem key={i + 1} value={String(i + 1)}>
                         Gameweek {i + 1}
