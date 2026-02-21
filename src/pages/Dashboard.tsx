@@ -237,10 +237,6 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <Switch id="hit-toggle" checked={allowHit} onCheckedChange={setAllowHit} />
-              <Label htmlFor="hit-toggle" className="text-xs">Allow -4</Label>
-            </div>
             <Link to="/explorer">
               <Button variant="outline" size="sm"><Search className="w-4 h-4 mr-1" /> Players</Button>
             </Link>
@@ -430,9 +426,15 @@ export default function Dashboard() {
             {/* Transfer Card */}
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-base font-display flex items-center gap-2">
-                  <ArrowRightLeft className="w-4 h-4" /> Transfer Suggestions
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base font-display flex items-center gap-2">
+                    <ArrowRightLeft className="w-4 h-4" /> Transfer Suggestions
+                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                    <Switch id="hit-toggle" checked={allowHit} onCheckedChange={setAllowHit} />
+                    <Label htmlFor="hit-toggle" className="text-xs">Allow -4</Label>
+                  </div>
+                </div>
                 <CardDescription>
                   £{((squad.bank ?? 0) / 10).toFixed(1)} ITB • {allowHit ? '-4 hit allowed' : 'Free transfer only'}
                 </CardDescription>
