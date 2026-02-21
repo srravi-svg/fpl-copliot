@@ -93,24 +93,27 @@ export async function fetchFixtures(): Promise<FPLFixture[]> {
 }
 
 export async function fetchSquadPicks(teamId: number, gameweek: number, allPlayers: FPLPlayer[]): Promise<SquadPlayer[]> {
-  try {
-    const data = await proxyFetch(`entry/${teamId}/event/${gameweek}/picks/`);
-    const playerMap = new Map(allPlayers.map(p => [p.id, p]));
+  const playerMap = new Map(allPlayers.map(p => [p.id, p]));
 
-    return data.picks.map((pick: any) => {
-      const player = playerMap.get(pick.element);
-      if (!player) return null;
-      return {
-        ...player,
-        position: pick.position,
-        is_captain: pick.is_captain,
-        is_vice_captain: pick.is_vice_captain,
-        multiplier: pick.multiplier,
-      } as SquadPlayer;
-    }).filter(Boolean) as SquadPlayer[];
-  } catch {
-    // Try current squad instead
-    const data = await proxyFetch(`entry/${teamId}/`);
-    throw new Error('Could not load squad picks. Try a different gameweek or use the demo squad.');
+  // Try requested GW first, then walk back up to 3 GWs to find the latest with data
+  for (let gw = gameweek; gw >= Math.max(1, gameweek - 3); gw--) {
+    try {
+      const data = await proxyFetch(`entry/${teamId}/event/${gw}/picks/`);
+      return data.picks.map((pick: any) => {
+        const player = playerMap.get(pick.element);
+        if (!player) return null;
+        return {
+          ...player,
+          position: pick.position,
+          is_captain: pick.is_captain,
+          is_vice_captain: pick.is_vice_captain,
+          multiplier: pick.multiplier,
+        } as SquadPlayer;
+      }).filter(Boolean) as SquadPlayer[];
+    } catch {
+      // Try previous gameweek
+      continue;
+    }
   }
+  throw new Error('Could not load squad picks. Try a different gameweek or use the demo squad.');
 }

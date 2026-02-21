@@ -12,7 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
   const [teamId, setTeamId] = useState('');
-  const [gameweek, setGameweek] = useState('28');
+  const [gameweek, setGameweek] = useState('');
+  const [detectedGw, setDetectedGw] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -33,7 +34,17 @@ const Index = () => {
         fetchFixtures(),
       ]);
 
-      const gw = parseInt(gameweek);
+      // Auto-detect current/latest finished gameweek if not manually set
+      let gw = gameweek ? parseInt(gameweek) : 0;
+      if (!gw) {
+        const current = bootstrap.gameweeks.find((g) => g.is_current);
+        const next = bootstrap.gameweeks.find((g) => g.is_next);
+        const lastFinished = [...bootstrap.gameweeks].reverse().find((g) => g.finished);
+        gw = current?.id ?? lastFinished?.id ?? next ? (next!.id - 1) : 1;
+      }
+      setGameweek(String(gw));
+      setDetectedGw(gw);
+
       const enriched = enrichPlayers(bootstrap.players, fixtures, bootstrap.teams, gw);
       const picks = await fetchSquadPicks(parseInt(teamId), gw, enriched);
 
@@ -120,12 +131,13 @@ const Index = () => {
 
                 <Select value={gameweek} onValueChange={setGameweek}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select Gameweek" />
+                    <SelectValue placeholder="Auto-detect Gameweek" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="">Auto-detect (latest)</SelectItem>
                     {Array.from({ length: 38 }, (_, i) => (
                       <SelectItem key={i + 1} value={String(i + 1)}>
-                        Gameweek {i + 1} {i + 1 === 28 ? '(Current)' : ''}
+                        Gameweek {i + 1}
                       </SelectItem>
                     ))}
                   </SelectContent>
