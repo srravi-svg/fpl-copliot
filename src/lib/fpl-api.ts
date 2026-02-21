@@ -42,6 +42,7 @@ export async function fetchBootstrapData(): Promise<{
 
   const players: FPLPlayer[] = data.elements.map((p: any) => ({
     id: p.id,
+    code: p.code,
     web_name: p.web_name,
     first_name: p.first_name,
     second_name: p.second_name,
