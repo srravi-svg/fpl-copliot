@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import PriceChanges from '@/components/PriceChanges';
 import LongTermPlanning from '@/components/LongTermPlanning';
+import TransferAnalysis from '@/components/TransferAnalysis';
 import { loadSquad, createDemoSquad, saveSquad, getDemoData } from '@/lib/fpl-store';
 import { UserSquad, SquadPlayer, POSITION_MAP, POSITION_COLORS, FixturePreview, ChatMessage, getPlayerPhotoUrl } from '@/lib/fpl-types';
 import PlayerPhoto from '@/components/PlayerPhoto';
@@ -59,10 +60,18 @@ export default function Dashboard() {
   const [isOfflineMode, setIsOfflineMode] = useState(false);
   const [allowHit, setAllowHit] = useState(false);
   const [squadView, setSquadView] = useState<'list' | 'pitch'>('list');
+  const [transferAnalysisDone, setTransferAnalysisDone] = useState(false);
+  const [transferAnalysisKey, setTransferAnalysisKey] = useState(0);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const activeTab = searchParams.get('tab') || 'squad';
-  const setActiveTab = (tab: string) => setSearchParams({ tab });
+  const setActiveTab = (tab: string) => {
+    if (tab === 'transfers') {
+      setTransferAnalysisDone(false);
+      setTransferAnalysisKey(prev => prev + 1);
+    }
+    setSearchParams({ tab });
+  };
 
   useEffect(() => {
     const saved = loadSquad();
@@ -445,6 +454,13 @@ export default function Dashboard() {
           {/* ===== TRANSFERS TAB ===== */}
           <TabsContent value="transfers">
             <div className="max-w-2xl mx-auto">
+              {!transferAnalysisDone ? (
+                <Card>
+                  <CardContent className="p-0">
+                    <TransferAnalysis key={transferAnalysisKey} onComplete={() => setTransferAnalysisDone(true)} />
+                  </CardContent>
+                </Card>
+              ) : (
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
@@ -550,6 +566,7 @@ export default function Dashboard() {
                   </p>
                 </CardContent>
               </Card>
+              )}
             </div>
           </TabsContent>
 
