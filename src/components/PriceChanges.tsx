@@ -155,7 +155,7 @@ export default function PriceChanges({ players }: PriceChangesProps) {
                           <TrendingDown className="w-3 h-3" /> Decrease
                         </Badge>
                       ) : (
-                        <Badge variant="secondary" className="gap-1 text-muted-foreground">Hold</Badge>
+                        <Badge variant="outline" className="gap-1 text-foreground bg-muted">Hold</Badge>
                       )}
                     </td>
                     <td className="py-2.5 text-center">
