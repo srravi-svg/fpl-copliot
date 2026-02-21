@@ -331,59 +331,31 @@ export default function Dashboard() {
                       </div>
                       {/* Bench */}
                       <div className="pt-3 border-t">
-                        <p className="text-xs font-semibold text-muted-foreground mb-1">BENCH ORDER</p>
-                        {bench.map((p, i) => {
-                          const fix = getNextFixture(p);
-                          return (
-                            <div key={p.id} className="flex items-center justify-between py-1 text-xs text-muted-foreground">
-                              <span>{i + 1}. {p.web_name} ({POSITION_MAP[p.element_type]})</span>
-                              <div className="flex items-center gap-2">
-                                <span className="font-mono">{p.captainScore.toFixed(2)}</span>
-                                {fix && (
-                                  <Badge className={`text-[8px] px-1 py-0 ${getFDRColor(fix.difficulty)}`}>
-                                    {fix.opponent} ({fix.isHome ? 'H' : 'A'})
+                        <p className="text-xs font-semibold text-muted-foreground mb-2">BENCH ORDER</p>
+                        <div className="space-y-1">
+                          {bench.map((p, i) => {
+                            const fix = getNextFixture(p);
+                            return (
+                              <div key={p.id} className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs text-muted-foreground w-4">{i + 1}</span>
+                                  <PlayerPhoto code={p.code} name={p.web_name} size="sm" />
+                                  <Badge variant="outline" className={`text-[10px] px-1 ${POSITION_COLORS[POSITION_MAP[p.element_type]]}`}>
+                                    {POSITION_MAP[p.element_type]}
                                   </Badge>
-                                )}
+                                  <span className="text-sm font-medium">{p.web_name}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-mono text-muted-foreground">{p.captainScore.toFixed(2)}</span>
+                                  {fix && (
+                                    <Badge className={`text-[8px] px-1 py-0 ${getFDRColor(fix.difficulty)}`}>
+                                      {fix.opponent} ({fix.isHome ? 'H' : 'A'})
+                                    </Badge>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                      {/* Full squad by position */}
-                      <div className="pt-3 border-t">
-                        <p className="text-xs font-semibold text-muted-foreground mb-2">FULL SQUAD</p>
-                        <div className="space-y-3">
-                          {(['GK', 'DEF', 'MID', 'FWD'] as const).map(pos => (
-                            <div key={pos}>
-                              <p className="text-xs font-semibold text-muted-foreground mb-1">{pos}</p>
-                              {groupedPlayers[pos]?.map(player => {
-                                const fix = getNextFixture(player);
-                                return (
-                                  <div key={player.id} className="flex items-center justify-between py-1.5 border-b border-border/50 last:border-0">
-                                    <div className="flex items-center gap-2">
-                                      <PlayerPhoto code={player.code} name={player.web_name} size="sm" />
-                                      <div>
-                                        <p className="text-sm font-medium leading-tight">
-                                          {player.web_name}
-                                          {player.is_captain && <Crown className="inline w-3 h-3 ml-1 text-amber-500" />}
-                                          {player.position > 11 && <span className="text-xs text-muted-foreground ml-1">(B)</span>}
-                                        </p>
-                                        <p className="text-[10px] text-muted-foreground">{player.team_short_name} • £{(player.now_cost / 10).toFixed(1)}</p>
-                                      </div>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-xs font-mono text-muted-foreground">{player.formScore.toFixed(1)}</span>
-                                      {fix && (
-                                        <Badge className={`text-[10px] px-1.5 ${getFDRColor(fix.difficulty)}`}>
-                                          {fix.opponent} ({fix.isHome ? 'H' : 'A'})
-                                        </Badge>
-                                      )}
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
                     </div>
