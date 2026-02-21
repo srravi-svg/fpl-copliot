@@ -10,11 +10,13 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import {
   ArrowLeft, RefreshCw, Crown, Users, ArrowRightLeft, Send, Bot, User,
-  TrendingUp, Shield, Clock, AlertTriangle, Home, Plane, Sparkles, Search
+  TrendingUp, Shield, Clock, AlertTriangle, Home, Plane, Sparkles, Search,
+  LayoutList, LayoutGrid
 } from 'lucide-react';
 import { loadSquad, createDemoSquad, saveSquad, getDemoData } from '@/lib/fpl-store';
 import { UserSquad, SquadPlayer, POSITION_MAP, POSITION_COLORS, FixturePreview, ChatMessage, getPlayerPhotoUrl } from '@/lib/fpl-types';
 import PlayerPhoto from '@/components/PlayerPhoto';
+import PitchView from '@/components/PitchView';
 import { generateCaptainRec, generateStartingXI, getFixturePreviews, getFDRColor } from '@/lib/fpl-metrics';
 import { DEMO_TEAMS, DEMO_FIXTURES } from '@/lib/demo-data';
 import ReactMarkdown from 'react-markdown';
@@ -49,6 +51,7 @@ export default function Dashboard() {
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
   const [allowHit, setAllowHit] = useState(false);
+  const [squadView, setSquadView] = useState<'list' | 'pitch'>('list');
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -246,42 +249,66 @@ export default function Dashboard() {
           <div className="lg:col-span-3 space-y-4">
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-base font-display flex items-center gap-2">
-                  <Users className="w-4 h-4" /> Squad
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {(['GK', 'DEF', 'MID', 'FWD'] as const).map(pos => (
-                  <div key={pos}>
-                    <p className="text-xs font-semibold text-muted-foreground mb-1">{pos}</p>
-                    {groupedPlayers[pos]?.map(player => {
-                      const fix = getNextFixture(player);
-                      return (
-                        <div key={player.id} className="flex items-center justify-between py-1.5 border-b border-border/50 last:border-0">
-                          <div className="flex items-center gap-2">
-                            <PlayerPhoto code={player.code} name={player.web_name} size="sm" />
-                            <div>
-                              <p className="text-sm font-medium leading-tight">
-                                {player.web_name}
-                                {player.is_captain && <Crown className="inline w-3 h-3 ml-1 text-amber-500" />}
-                                {player.position > 11 && <span className="text-xs text-muted-foreground ml-1">(B)</span>}
-                              </p>
-                              <p className="text-[10px] text-muted-foreground">{player.team_short_name} • £{(player.now_cost / 10).toFixed(1)}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-mono text-muted-foreground">{player.formScore.toFixed(1)}</span>
-                            {fix && (
-                              <Badge className={`text-[10px] px-1.5 ${getFDRColor(fix.difficulty)}`}>
-                                {fix.isHome ? '' : '@'}{fix.opponent}
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base font-display flex items-center gap-2">
+                    <Users className="w-4 h-4" /> Squad
+                  </CardTitle>
+                  <div className="flex items-center gap-1 bg-muted rounded-md p-0.5">
+                    <button
+                      onClick={() => setSquadView('list')}
+                      className={`p-1.5 rounded transition-colors ${squadView === 'list' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                      title="List view"
+                    >
+                      <LayoutList className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => setSquadView('pitch')}
+                      className={`p-1.5 rounded transition-colors ${squadView === 'pitch' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                      title="Pitch view"
+                    >
+                      <LayoutGrid className="w-3.5 h-3.5" />
+                    </button>
                   </div>
-                ))}
+                </div>
+              </CardHeader>
+              <CardContent>
+                {squadView === 'pitch' ? (
+                  <PitchView players={squad.players} getNextFixture={getNextFixture} />
+                ) : (
+                  <div className="space-y-3">
+                    {(['GK', 'DEF', 'MID', 'FWD'] as const).map(pos => (
+                      <div key={pos}>
+                        <p className="text-xs font-semibold text-muted-foreground mb-1">{pos}</p>
+                        {groupedPlayers[pos]?.map(player => {
+                          const fix = getNextFixture(player);
+                          return (
+                            <div key={player.id} className="flex items-center justify-between py-1.5 border-b border-border/50 last:border-0">
+                              <div className="flex items-center gap-2">
+                                <PlayerPhoto code={player.code} name={player.web_name} size="sm" />
+                                <div>
+                                  <p className="text-sm font-medium leading-tight">
+                                    {player.web_name}
+                                    {player.is_captain && <Crown className="inline w-3 h-3 ml-1 text-amber-500" />}
+                                    {player.position > 11 && <span className="text-xs text-muted-foreground ml-1">(B)</span>}
+                                  </p>
+                                  <p className="text-[10px] text-muted-foreground">{player.team_short_name} • £{(player.now_cost / 10).toFixed(1)}</p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-mono text-muted-foreground">{player.formScore.toFixed(1)}</span>
+                                {fix && (
+                                  <Badge className={`text-[10px] px-1.5 ${getFDRColor(fix.difficulty)}`}>
+                                    {fix.opponent} ({fix.isHome ? 'H' : 'A'})
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -320,7 +347,7 @@ export default function Dashboard() {
                         {fix && (
                           <div className="flex items-center gap-1">
                             {fix.isHome ? <Home className="w-3 h-3" /> : <Plane className="w-3 h-3" />}
-                            vs {fix.opponent}
+                            {fix.opponent} ({fix.isHome ? 'H' : 'A'})
                           </div>
                         )}
                       </div>
