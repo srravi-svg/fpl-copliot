@@ -336,7 +336,10 @@ export default function Dashboard() {
                     <div className="space-y-4">
                       {/* Starting XI list */}
                       <div>
-                        <p className="text-xs font-semibold text-muted-foreground mb-2">STARTING XI</p>
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-xs font-semibold text-muted-foreground">STARTING XI</p>
+                          <p className="text-xs font-semibold text-muted-foreground">xPts</p>
+                        </div>
                         <div className="space-y-1">
                           {starting.map((p, i) => {
                             const fix = getNextFixture(p);
@@ -366,7 +369,10 @@ export default function Dashboard() {
                       </div>
                       {/* Bench */}
                       <div className="pt-3 border-t">
-                        <p className="text-xs font-semibold text-muted-foreground mb-2">BENCH ORDER</p>
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-xs font-semibold text-muted-foreground">BENCH ORDER</p>
+                            <p className="text-xs font-semibold text-muted-foreground">xPts</p>
+                          </div>
                         <div className="space-y-1">
                           {bench.map((p, i) => {
                             const fix = getNextFixture(p);
