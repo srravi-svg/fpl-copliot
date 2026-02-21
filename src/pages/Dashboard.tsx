@@ -279,7 +279,7 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 {squadView === 'pitch' ? (
-                  <PitchView players={squad.players} getNextFixture={getNextFixture} />
+                  <PitchView starting={starting} bench={bench} getNextFixture={getNextFixture} />
                 ) : (
                   <div className="space-y-3">
                     {(['GK', 'DEF', 'MID', 'FWD'] as const).map(pos => (
