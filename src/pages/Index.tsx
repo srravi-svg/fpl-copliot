@@ -92,23 +92,24 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-primary/80" />
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-10 w-72 h-72 rounded-full bg-secondary blur-3xl" />
-          <div className="absolute bottom-10 right-20 w-96 h-96 rounded-full bg-secondary blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-br from-fpl-purple via-fpl-purple to-fpl-purple/90" />
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-20 left-10 w-72 h-72 rounded-full bg-fpl-green blur-3xl" />
+          <div className="absolute bottom-10 right-20 w-96 h-96 rounded-full bg-fpl-green blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-fpl-green/30 blur-3xl" />
         </div>
 
         <div className="relative container mx-auto px-4 py-16 md:py-24">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/20 text-secondary mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-fpl-green/20 text-fpl-green mb-6">
               <Zap className="w-4 h-4" />
               <span className="text-sm font-medium">AI-Powered FPL Decisions</span>
             </div>
 
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-primary-foreground mb-6 tracking-tight">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white mb-6 tracking-tight">
               FPL Copilot
             </h1>
-            <p className="text-lg md:text-xl text-primary-foreground/80 mb-12 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-white/75 mb-12 max-w-2xl mx-auto">
               Your AI-powered weekly decision assistant for Fantasy Premier League.
               Get captain picks, lineup advice, and transfer suggestions backed by data.
             </p>
@@ -167,7 +168,7 @@ const Index = () => {
                   <Button
                     variant="outline"
                     onClick={handleDemoSquad}
-                    className="w-full h-12 text-base border-secondary text-secondary hover:bg-secondary/10"
+                    className="w-full h-12 text-base border-fpl-green text-fpl-green hover:bg-fpl-green/10"
                   >
                     <Users className="w-4 h-4" />
                     Use Demo Squad
