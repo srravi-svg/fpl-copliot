@@ -438,34 +438,82 @@ export default function Dashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                {[
-                  { tier: 'Safe', desc: 'Low-risk sideways move for form', color: 'border-emerald-500/30' },
-                  { tier: 'Upside', desc: 'Higher ceiling, fixture-driven', color: 'border-amber-500/30' },
-                  ...(allowHit ? [{ tier: 'Aggressive', desc: '-4 hit for double upgrade', color: 'border-red-500/30' }] : []),
-                ].map(({ tier, desc, color }) => {
-                  const weakest = [...squad.players].sort((a, b) => a.captainScore - b.captainScore)[0];
-                  const weakestFix = weakest ? getNextFixture(weakest) : null;
-                  return (
-                    <div key={tier} className={`p-3 rounded-lg border ${color}`}>
-                      <div className="flex items-center justify-between mb-1">
-                        <p className="text-sm font-semibold">{tier}</p>
-                        <Badge variant="outline" className="text-[10px]">{tier === 'Aggressive' ? '-4 pts' : 'Free'}</Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground mb-2">{desc}</p>
-                      <div className="flex items-center gap-2 text-xs flex-wrap">
-                        <span>
-                          <span className="text-destructive">OUT:</span> {weakest?.web_name} ({weakest?.team_short_name})
-                        </span>
-                        {weakestFix && (
-                          <Badge className={`text-[8px] px-1 py-0 ${getFDRColor(weakestFix.difficulty)}`}>
-                            {weakestFix.opponent} ({weakestFix.isHome ? 'H' : 'A'})
-                          </Badge>
+                {(() => {
+                  const allPlayers = savedData?.players ?? [];
+                  const squadIds = new Set(squad.players.map(p => p.id));
+                  const weakestPlayers = [...squad.players].sort((a, b) => a.captainScore - b.captainScore);
+
+                  const tiers = [
+                    { tier: 'Safe', desc: 'Low-risk sideways move for form', color: 'border-emerald-500/30', weakIdx: 0 },
+                    { tier: 'Upside', desc: 'Higher ceiling, fixture-driven', color: 'border-amber-500/30', weakIdx: 1 },
+                    ...(allowHit ? [{ tier: 'Aggressive', desc: '-4 hit for double upgrade', color: 'border-red-500/30', weakIdx: 2 }] : []),
+                  ];
+
+                  return tiers.map(({ tier, desc, color, weakIdx }) => {
+                    const weakest = weakestPlayers[weakIdx];
+                    if (!weakest) return null;
+                    const weakestFix = getNextFixture(weakest);
+                    const pos = weakest.element_type;
+                    const budget = weakest.now_cost + 5; // small buffer
+
+                    // Find best replacement from full pool
+                    const candidates = allPlayers
+                      .filter((p: any) => !squadIds.has(p.id) && p.element_type === pos && p.now_cost <= budget && p.status === 'a')
+                      .sort((a: any, b: any) => {
+                        if (tier === 'Safe') return parseFloat(b.form) - parseFloat(a.form);
+                        if (tier === 'Upside') return (b.fixtureScore ?? 5) - (a.fixtureScore ?? 5);
+                        return b.total_points - a.total_points;
+                      })
+                      .slice(0, 2);
+
+                    return (
+                      <div key={tier} className={`p-3 rounded-lg border ${color}`}>
+                        <div className="flex items-center justify-between mb-1">
+                          <p className="text-sm font-semibold">{tier}</p>
+                          <Badge variant="outline" className="text-[10px]">{tier === 'Aggressive' ? '-4 pts' : 'Free'}</Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground mb-2">{desc}</p>
+
+                        {/* OUT player */}
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xs text-destructive font-semibold">OUT</span>
+                          <PlayerPhoto code={weakest.code} name={weakest.web_name} size="sm" />
+                          <div className="flex-1 min-w-0">
+                            <span className="text-xs font-medium">{weakest.web_name}</span>
+                            <span className="text-[10px] text-muted-foreground ml-1">({weakest.team_short_name} • £{(weakest.now_cost / 10).toFixed(1)})</span>
+                          </div>
+                          {weakestFix && (
+                            <Badge className={`text-[8px] px-1 py-0 ${getFDRColor(weakestFix.difficulty)}`}>
+                              {weakestFix.opponent} ({weakestFix.isHome ? 'H' : 'A'})
+                            </Badge>
+                          )}
+                        </div>
+
+                        {/* IN candidates */}
+                        {candidates.length > 0 ? candidates.map((c: any) => {
+                          const cFix = getNextFixture(c);
+                          return (
+                            <div key={c.id} className="flex items-center gap-2 ml-4 mb-1">
+                              <span className="text-xs text-emerald-600 font-semibold">IN</span>
+                              <PlayerPhoto code={c.code} name={c.web_name} size="sm" />
+                              <div className="flex-1 min-w-0">
+                                <span className="text-xs font-medium">{c.web_name}</span>
+                                <span className="text-[10px] text-muted-foreground ml-1">({c.team_short_name} • £{(c.now_cost / 10).toFixed(1)} • Form: {c.form})</span>
+                              </div>
+                              {cFix && (
+                                <Badge className={`text-[8px] px-1 py-0 ${getFDRColor(cFix.difficulty)}`}>
+                                  {cFix.opponent} ({cFix.isHome ? 'H' : 'A'})
+                                </Badge>
+                              )}
+                            </div>
+                          );
+                        }) : (
+                          <p className="text-[10px] text-muted-foreground ml-4">No data available — load squad with your Team ID for suggestions</p>
                         )}
-                        <span>→ <span className="text-emerald-600">IN:</span> Best available {POSITION_MAP[weakest?.element_type ?? 3]}</span>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  });
+                })()}
                 <p className="text-[10px] text-muted-foreground">
                   <AlertTriangle className="inline w-3 h-3 mr-1" />
                   Budget assumed £0.0 ITB. Actual transfers depend on your real budget.
