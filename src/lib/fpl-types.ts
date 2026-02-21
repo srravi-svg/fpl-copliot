@@ -2,6 +2,7 @@
 
 export interface FPLPlayer {
   id: number;
+  code: number; // used for photo URL
   web_name: string;
   first_name: string;
   second_name: string;
@@ -25,6 +26,12 @@ export interface FPLPlayer {
   minutesReliability: number;
   fixtureScore: number;
   captainScore: number;
+}
+
+/** Get player photo URL from PL resources */
+export function getPlayerPhotoUrl(code: number, size: 'small' | 'medium' = 'small'): string {
+  const px = size === 'small' ? '110x140' : '250x250';
+  return `https://resources.premierleague.com/premierleague/photos/players/${px}/p${code}.png`;
 }
 
 export interface FPLTeam {

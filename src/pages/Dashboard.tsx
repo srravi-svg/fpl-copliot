@@ -13,7 +13,8 @@ import {
   TrendingUp, Shield, Clock, AlertTriangle, Home, Plane, Sparkles, Search
 } from 'lucide-react';
 import { loadSquad, createDemoSquad, saveSquad, getDemoData } from '@/lib/fpl-store';
-import { UserSquad, SquadPlayer, POSITION_MAP, POSITION_COLORS, FixturePreview, ChatMessage } from '@/lib/fpl-types';
+import { UserSquad, SquadPlayer, POSITION_MAP, POSITION_COLORS, FixturePreview, ChatMessage, getPlayerPhotoUrl } from '@/lib/fpl-types';
+import PlayerPhoto from '@/components/PlayerPhoto';
 import { generateCaptainRec, generateStartingXI, getFixturePreviews, getFDRColor } from '@/lib/fpl-metrics';
 import { DEMO_TEAMS, DEMO_FIXTURES } from '@/lib/demo-data';
 import ReactMarkdown from 'react-markdown';
@@ -258,7 +259,7 @@ export default function Dashboard() {
                       return (
                         <div key={player.id} className="flex items-center justify-between py-1.5 border-b border-border/50 last:border-0">
                           <div className="flex items-center gap-2">
-                            <Badge variant="outline" className={`text-[10px] px-1 ${POSITION_COLORS[pos]}`}>{pos}</Badge>
+                            <PlayerPhoto code={player.code} name={player.web_name} size="sm" />
                             <div>
                               <p className="text-sm font-medium leading-tight">
                                 {player.web_name}
@@ -305,6 +306,7 @@ export default function Dashboard() {
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <span className="text-lg font-display font-bold text-muted-foreground">#{i + 1}</span>
+                          <PlayerPhoto code={player.code} name={player.web_name} size="md" />
                           <div>
                             <p className="font-semibold">{player.web_name}</p>
                             <p className="text-xs text-muted-foreground">{player.team_short_name} • {POSITION_MAP[player.element_type]}</p>
@@ -346,6 +348,7 @@ export default function Dashboard() {
                     <div key={p.id} className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-muted-foreground w-4">{i + 1}</span>
+                        <PlayerPhoto code={p.code} name={p.web_name} size="sm" />
                         <Badge variant="outline" className={`text-[10px] px-1 ${POSITION_COLORS[POSITION_MAP[p.element_type]]}`}>
                           {POSITION_MAP[p.element_type]}
                         </Badge>

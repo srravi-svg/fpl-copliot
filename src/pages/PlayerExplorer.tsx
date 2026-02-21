@@ -6,22 +6,23 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ArrowLeft, Search, GitCompareArrows, X } from 'lucide-react';
+import PlayerPhoto from '@/components/PlayerPhoto';
 import { DEMO_TEAMS, getDemoSquad, DEMO_FIXTURES } from '@/lib/demo-data';
-import { POSITION_MAP, POSITION_COLORS, FPLPlayer } from '@/lib/fpl-types';
+import { POSITION_MAP, POSITION_COLORS, FPLPlayer, getPlayerPhotoUrl } from '@/lib/fpl-types';
 import { getFixturePreviews, getFDRColor } from '@/lib/fpl-metrics';
 
 // Generate a larger pool of players for the explorer
 function getAllPlayers(): FPLPlayer[] {
   const squad = getDemoSquad();
   const extraPlayers: Omit<FPLPlayer, 'formScore' | 'minutesReliability' | 'fixtureScore' | 'captainScore'>[] = [
-    { id: 100, web_name: 'Watkins', first_name: 'Ollie', second_name: 'Watkins', team: 2, team_short_name: 'AVL', element_type: 4, now_cost: 88, total_points: 150, event_points: 5, form: '5.5', points_per_game: '5.0', minutes: 2520, goals_scored: 14, assists: 8, clean_sheets: 5, selected_by_percent: '20.1', status: 'a', chance_of_playing_next_round: 100 },
-    { id: 101, web_name: 'Son', first_name: 'Heung-min', second_name: 'Son', team: 17, team_short_name: 'TOT', element_type: 3, now_cost: 98, total_points: 148, event_points: 7, form: '5.8', points_per_game: '5.3', minutes: 2430, goals_scored: 12, assists: 9, clean_sheets: 5, selected_by_percent: '16.4', status: 'a', chance_of_playing_next_round: 100 },
-    { id: 102, web_name: 'Gordon', first_name: 'Anthony', second_name: 'Gordon', team: 14, team_short_name: 'NEW', element_type: 3, now_cost: 75, total_points: 135, event_points: 6, form: '5.2', points_per_game: '4.8', minutes: 2340, goals_scored: 9, assists: 7, clean_sheets: 6, selected_by_percent: '14.8', status: 'a', chance_of_playing_next_round: 100 },
-    { id: 103, web_name: 'Cunha', first_name: 'Matheus', second_name: 'Cunha', team: 20, team_short_name: 'WOL', element_type: 4, now_cost: 72, total_points: 128, event_points: 4, form: '4.8', points_per_game: '4.6', minutes: 2250, goals_scored: 11, assists: 5, clean_sheets: 3, selected_by_percent: '12.3', status: 'a', chance_of_playing_next_round: 100 },
-    { id: 104, web_name: 'Pickford', first_name: 'Jordan', second_name: 'Pickford', team: 8, team_short_name: 'EVE', element_type: 1, now_cost: 49, total_points: 110, event_points: 2, form: '3.8', points_per_game: '3.7', minutes: 2700, goals_scored: 0, assists: 0, clean_sheets: 8, selected_by_percent: '11.2', status: 'a', chance_of_playing_next_round: 100 },
-    { id: 105, web_name: 'Bruno', first_name: 'Bruno', second_name: 'Fernandes', team: 13, team_short_name: 'MUN', element_type: 3, now_cost: 84, total_points: 125, event_points: 3, form: '4.2', points_per_game: '4.5', minutes: 2610, goals_scored: 7, assists: 8, clean_sheets: 5, selected_by_percent: '13.5', status: 'a', chance_of_playing_next_round: 100 },
-    { id: 106, web_name: 'Diaz', first_name: 'Luis', second_name: 'Diaz', team: 11, team_short_name: 'LIV', element_type: 3, now_cost: 79, total_points: 140, event_points: 8, form: '6.0', points_per_game: '5.0', minutes: 2340, goals_scored: 10, assists: 6, clean_sheets: 9, selected_by_percent: '19.5', status: 'a', chance_of_playing_next_round: 100 },
-    { id: 107, web_name: 'Gabriel', first_name: 'Gabriel', second_name: 'Magalhães', team: 1, team_short_name: 'ARS', element_type: 2, now_cost: 62, total_points: 138, event_points: 6, form: '4.8', points_per_game: '4.6', minutes: 2610, goals_scored: 4, assists: 1, clean_sheets: 12, selected_by_percent: '18.7', status: 'a', chance_of_playing_next_round: 100 },
+    { id: 100, code: 195546, web_name: 'Watkins', first_name: 'Ollie', second_name: 'Watkins', team: 2, team_short_name: 'AVL', element_type: 4, now_cost: 88, total_points: 150, event_points: 5, form: '5.5', points_per_game: '5.0', minutes: 2520, goals_scored: 14, assists: 8, clean_sheets: 5, selected_by_percent: '20.1', status: 'a', chance_of_playing_next_round: 100 },
+    { id: 101, code: 85971, web_name: 'Son', first_name: 'Heung-min', second_name: 'Son', team: 17, team_short_name: 'TOT', element_type: 3, now_cost: 98, total_points: 148, event_points: 7, form: '5.8', points_per_game: '5.3', minutes: 2430, goals_scored: 12, assists: 9, clean_sheets: 5, selected_by_percent: '16.4', status: 'a', chance_of_playing_next_round: 100 },
+    { id: 102, code: 444275, web_name: 'Gordon', first_name: 'Anthony', second_name: 'Gordon', team: 14, team_short_name: 'NEW', element_type: 3, now_cost: 75, total_points: 135, event_points: 6, form: '5.2', points_per_game: '4.8', minutes: 2340, goals_scored: 9, assists: 7, clean_sheets: 6, selected_by_percent: '14.8', status: 'a', chance_of_playing_next_round: 100 },
+    { id: 103, code: 444716, web_name: 'Cunha', first_name: 'Matheus', second_name: 'Cunha', team: 20, team_short_name: 'WOL', element_type: 4, now_cost: 72, total_points: 128, event_points: 4, form: '4.8', points_per_game: '4.6', minutes: 2250, goals_scored: 11, assists: 5, clean_sheets: 3, selected_by_percent: '12.3', status: 'a', chance_of_playing_next_round: 100 },
+    { id: 104, code: 98745, web_name: 'Pickford', first_name: 'Jordan', second_name: 'Pickford', team: 8, team_short_name: 'EVE', element_type: 1, now_cost: 49, total_points: 110, event_points: 2, form: '3.8', points_per_game: '3.7', minutes: 2700, goals_scored: 0, assists: 0, clean_sheets: 8, selected_by_percent: '11.2', status: 'a', chance_of_playing_next_round: 100 },
+    { id: 105, code: 141746, web_name: 'Bruno', first_name: 'Bruno', second_name: 'Fernandes', team: 13, team_short_name: 'MUN', element_type: 3, now_cost: 84, total_points: 125, event_points: 3, form: '4.2', points_per_game: '4.5', minutes: 2610, goals_scored: 7, assists: 8, clean_sheets: 5, selected_by_percent: '13.5', status: 'a', chance_of_playing_next_round: 100 },
+    { id: 106, code: 467086, web_name: 'Diaz', first_name: 'Luis', second_name: 'Diaz', team: 11, team_short_name: 'LIV', element_type: 3, now_cost: 79, total_points: 140, event_points: 8, form: '6.0', points_per_game: '5.0', minutes: 2340, goals_scored: 10, assists: 6, clean_sheets: 9, selected_by_percent: '19.5', status: 'a', chance_of_playing_next_round: 100 },
+    { id: 107, code: 180970, web_name: 'Gabriel', first_name: 'Gabriel', second_name: 'Magalhães', team: 1, team_short_name: 'ARS', element_type: 2, now_cost: 62, total_points: 138, event_points: 6, form: '4.8', points_per_game: '4.6', minutes: 2610, goals_scored: 4, assists: 1, clean_sheets: 12, selected_by_percent: '18.7', status: 'a', chance_of_playing_next_round: 100 },
   ];
 
   const allRaw = [
@@ -115,6 +116,7 @@ export default function PlayerExplorer() {
                 <div />
                 {comparePlayers.map(p => (
                   <div key={p.id} className="text-center font-semibold">
+                    <PlayerPhoto code={p.code} name={p.web_name} size="lg" className="mx-auto mb-1" />
                     {p.web_name}
                     <p className="text-xs text-muted-foreground font-normal">{p.team_short_name} • {POSITION_MAP[p.element_type]}</p>
                   </div>
@@ -181,9 +183,12 @@ export default function PlayerExplorer() {
                       </button>
                     </TableCell>
                     <TableCell>
-                      <div>
-                        <p className="font-medium text-sm">{player.web_name}</p>
-                        <p className="text-xs text-muted-foreground">{player.team_short_name}</p>
+                      <div className="flex items-center gap-2">
+                        <PlayerPhoto code={player.code} name={player.web_name} size="sm" />
+                        <div>
+                          <p className="font-medium text-sm">{player.web_name}</p>
+                          <p className="text-xs text-muted-foreground">{player.team_short_name}</p>
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell>
